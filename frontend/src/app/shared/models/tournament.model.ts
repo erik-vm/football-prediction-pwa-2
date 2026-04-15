@@ -1,0 +1,42 @@
+export interface TournamentDto {
+  id: string;
+  name: string;
+  season: string;
+  startDate: string;
+  endDate: string;
+  isActive: boolean;
+}
+
+export interface GameWeekDto {
+  id: string;
+  tournamentId: string;
+  weekNumber: number;
+  startDate: string;
+  endDate: string;
+}
+
+export interface MatchDto {
+  id: string;
+  gameWeekId: string;
+  homeTeam: string;
+  awayTeam: string;
+  kickoffTime: string;
+  stage: string;
+  stageMultiplier: number;
+  homeScore: number | null;
+  awayScore: number | null;
+  isFinished: boolean;
+}
+
+export interface CreateMatchRequest {
+  gameWeekId: string;
+  homeTeam: string;
+  awayTeam: string;
+  kickoffTime: string;
+  stage: string;
+}
+
+export interface EnterResultRequest {
+  homeScore: number;
+  awayScore: number;
+}

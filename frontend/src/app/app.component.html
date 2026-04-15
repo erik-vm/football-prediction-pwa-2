@@ -1,0 +1,20 @@
+@if (auth.isLoggedIn()) {
+  <nav class="bg-indigo-600 text-white shadow-lg">
+    <div class="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
+      <span class="font-bold text-lg">Football Predictions</span>
+      <div class="flex gap-3 text-sm">
+        <a routerLink="/matches" routerLinkActive="font-bold underline" class="hover:opacity-80">Matches</a>
+        <a routerLink="/predictions" routerLinkActive="font-bold underline" class="hover:opacity-80">My Picks</a>
+        <a routerLink="/leaderboard" routerLinkActive="font-bold underline" class="hover:opacity-80">Leaderboard</a>
+        @if (auth.isAdmin()) {
+          <a routerLink="/admin" routerLinkActive="font-bold underline" class="hover:opacity-80">Admin</a>
+        }
+        <button (click)="auth.logout()" class="hover:opacity-80">Logout</button>
+      </div>
+    </div>
+  </nav>
+}
+
+<main class="max-w-lg mx-auto px-4 py-4">
+  <router-outlet />
+</main>
