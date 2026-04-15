@@ -18,6 +18,12 @@ public static class DependencyInjection
 
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<ITournamentService, TournamentService>();
+        services.AddScoped<IGameWeekService, GameWeekService>();
+        services.AddScoped<IMatchService, MatchService>();
+        services.AddScoped<IScoringService, ScoringService>();
+        services.AddScoped<IPredictionService, PredictionService>();
+        services.AddScoped<ILeaderboardService, LeaderboardService>();
 
         return services;
     }
