@@ -1,14 +1,14 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /app
 
-COPY src/FootballPrediction.Api/*.csproj ./src/FootballPrediction.Api/
-COPY src/FootballPrediction.Application/*.csproj ./src/FootballPrediction.Application/
-COPY src/FootballPrediction.Domain/*.csproj ./src/FootballPrediction.Domain/
-COPY src/FootballPrediction.Infrastructure/*.csproj ./src/FootballPrediction.Infrastructure/
+COPY backend/src/FootballPrediction.Api/*.csproj ./src/FootballPrediction.Api/
+COPY backend/src/FootballPrediction.Application/*.csproj ./src/FootballPrediction.Application/
+COPY backend/src/FootballPrediction.Domain/*.csproj ./src/FootballPrediction.Domain/
+COPY backend/src/FootballPrediction.Infrastructure/*.csproj ./src/FootballPrediction.Infrastructure/
 
 RUN dotnet restore src/FootballPrediction.Api/FootballPrediction.Api.csproj
 
-COPY src/ ./src/
+COPY backend/src/ ./src/
 RUN dotnet publish src/FootballPrediction.Api/FootballPrediction.Api.csproj -c Release -o /out
 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
