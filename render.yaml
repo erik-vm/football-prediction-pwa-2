@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: football-prediction-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ConnectionStrings__DefaultConnection
+        fromDatabase:
+          name: football-prediction-db
+          property: connectionURI
+      - key: Jwt__Key
+        generateValue: true
+      - key: Jwt__Issuer
+        value: FootballPrediction
+      - key: Jwt__Audience
+        value: FootballPredictionUsers
+      - key: Jwt__AccessTokenExpirationMinutes
+        value: "60"
+      - key: Jwt__RefreshTokenExpirationDays
+        value: "7"
+      - key: FootballDataApi__BaseUrl
+        value: https://api.football-data.org/v4
+      - key: FootballDataApi__ApiKey
+        value: 2c778464a60e4b51b2407fcc62539791
+
+databases:
+  - name: football-prediction-db
+    plan: free
+    databaseName: footballprediction
+    user: footballprediction
