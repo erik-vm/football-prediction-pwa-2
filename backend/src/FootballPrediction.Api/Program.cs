@@ -1,5 +1,7 @@
 using System.Text;
 using System.Text.Json.Serialization;
+using FootballPrediction.Api.Middleware;
+using FootballPrediction.Infrastructure;
 using FootballPrediction.Infrastructure.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -62,6 +64,8 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddInfrastructure();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -72,6 +76,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseCors("AllowFrontend");
 
