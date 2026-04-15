@@ -10,10 +10,12 @@ namespace FootballPrediction.Api.Controllers;
 public class AdminGameWeekController : ControllerBase
 {
     private readonly IGameWeekService _gameWeekService;
+    private readonly IMatchImportService _matchImportService;
 
-    public AdminGameWeekController(IGameWeekService gameWeekService)
+    public AdminGameWeekController(IGameWeekService gameWeekService, IMatchImportService matchImportService)
     {
         _gameWeekService = gameWeekService;
+        _matchImportService = matchImportService;
     }
 
     [HttpPost("api/v1/admin/gameweeks")]
@@ -39,5 +41,11 @@ public class AdminGameWeekController : ControllerBase
     public async Task<ActionResult<GameWeekDto>> Update(Guid id, [FromBody] UpdateGameWeekRequest request)
     {
         return Ok(await _gameWeekService.UpdateAsync(id, request));
+    }
+
+    [HttpPost("api/v1/admin/gameweeks/{id:guid}/import-matches")]
+    public async Task<ActionResult<ImportMatchesResponse>> ImportMatches(Guid id, [FromBody] ImportMatchesRequest request)
+    {
+        return Ok(await _matchImportService.ImportMatchesAsync(id, request));
     }
 }

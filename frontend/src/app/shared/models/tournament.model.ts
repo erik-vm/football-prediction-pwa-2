@@ -40,3 +40,17 @@ export interface EnterResultRequest {
   homeScore: number;
   awayScore: number;
 }
+
+export interface ImportMatchesRequest {
+  competition: string;
+  matchday?: number;
+  season?: number;
+  dateFrom?: string;
+  dateTo?: string;
+}
+
+export interface ImportMatchesResponse {
+  imported: number;
+  skipped: number;
+  details: string[];
+}

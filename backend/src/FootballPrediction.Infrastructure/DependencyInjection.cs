@@ -25,6 +25,9 @@ public static class DependencyInjection
         services.AddScoped<IPredictionService, PredictionService>();
         services.AddScoped<ILeaderboardService, LeaderboardService>();
 
+        services.AddHttpClient<IFootballDataService, FootballDataService>();
+        services.AddScoped<IMatchImportService, MatchImportService>();
+
         return services;
     }
 }

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { TournamentDto, GameWeekDto, MatchDto, CreateMatchRequest, EnterResultRequest } from '../../shared/models/tournament.model';
+import { TournamentDto, GameWeekDto, MatchDto, CreateMatchRequest, EnterResultRequest, ImportMatchesRequest, ImportMatchesResponse } from '../../shared/models/tournament.model';
 import { PredictionDto, CreatePredictionRequest, UpdatePredictionRequest, MatchPredictionDto } from '../../shared/models/prediction.model';
 import { LeaderboardEntryDto, WeeklyLeaderboardEntryDto, UserStatsDto } from '../../shared/models/leaderboard.model';
 
@@ -34,6 +34,10 @@ export class ApiService {
 
   createGameWeek(data: Partial<GameWeekDto> & { tournamentId: string }): Observable<GameWeekDto> {
     return this.http.post<GameWeekDto>(`${this.api}/admin/gameweeks`, data);
+  }
+
+  importMatches(gameWeekId: string, data: ImportMatchesRequest): Observable<ImportMatchesResponse> {
+    return this.http.post<ImportMatchesResponse>(`${this.api}/admin/gameweeks/${gameWeekId}/import-matches`, data);
   }
 
   getUpcomingMatches(): Observable<MatchDto[]> {

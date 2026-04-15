@@ -2,7 +2,7 @@ import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { ApiService } from '../../core/services/api.service';
-import { TournamentDto, GameWeekDto, MatchDto } from '../../shared/models/tournament.model';
+import { TournamentDto, GameWeekDto, MatchDto, ImportMatchesRequest } from '../../shared/models/tournament.model';
 
 @Component({
   selector: 'app-admin',
@@ -54,6 +54,31 @@ import { TournamentDto, GameWeekDto, MatchDto } from '../../shared/models/tourna
       @if (selectedGameWeek()) {
         <section class="bg-white rounded-lg shadow p-4">
           <h2 class="font-bold mb-3">Matches - Week {{ selectedGameWeek()!.weekNumber }}</h2>
+
+          <div class="bg-indigo-50 rounded p-3 mb-3">
+            <h3 class="text-sm font-bold mb-2">Import from football-data.org</h3>
+            <div class="flex gap-2 flex-wrap">
+              <select [(ngModel)]="importData.competition" class="border rounded px-2 py-1 text-sm">
+                <option value="CL">Champions League</option>
+                <option value="EL">Europa League</option>
+                <option value="PL">Premier League</option>
+                <option value="BL1">Bundesliga</option>
+                <option value="SA">Serie A</option>
+                <option value="PD">La Liga</option>
+                <option value="FL1">Ligue 1</option>
+              </select>
+              <input type="number" [(ngModel)]="importData.matchday" placeholder="Matchday" class="w-24 border rounded px-2 py-1 text-sm">
+              <input type="number" [(ngModel)]="importData.season" placeholder="Season (e.g. 2024)" class="w-32 border rounded px-2 py-1 text-sm">
+              <button (click)="importMatches()" [disabled]="importing()"
+                class="bg-green-600 text-white text-sm px-3 py-1 rounded hover:bg-green-700 disabled:opacity-50">
+                {{ importing() ? 'Importing...' : 'Import' }}
+              </button>
+            </div>
+            @if (importResult()) {
+              <p class="text-xs mt-2 text-green-700">{{ importResult() }}</p>
+            }
+          </div>
+
           @for (m of matches(); track m.id) {
             <div class="border-b py-2">
               <div class="flex justify-between text-sm">
@@ -107,6 +132,10 @@ export class AdminComponent implements OnInit {
   selectedGameWeek = signal<GameWeekDto | null>(null);
   matches = signal<MatchDto[]>([]);
   message = signal('');
+
+  importing = signal(false);
+  importResult = signal('');
+  importData = { competition: 'CL', matchday: null as number | null, season: null as number | null };
 
   newTournament = { name: '', season: '', startDate: '', endDate: '' };
   newWeekNumber = 1;
@@ -180,6 +209,32 @@ export class AdminComponent implements OnInit {
     }).subscribe({
       next: () => { this.selectGameWeek(gw); this.showMessage('Match created'); },
       error: (err) => this.showMessage(err.error?.error || 'Failed')
+    });
+  }
+
+  importMatches(): void {
+    const gw = this.selectedGameWeek();
+    if (!gw || !this.importData.matchday || !this.importData.season) return;
+
+    this.importing.set(true);
+    this.importResult.set('');
+
+    const req: ImportMatchesRequest = {
+      competition: this.importData.competition,
+      matchday: this.importData.matchday,
+      season: this.importData.season
+    };
+
+    this.api.importMatches(gw.id, req).subscribe({
+      next: (res) => {
+        this.importResult.set(`Imported: ${res.imported}, Skipped: ${res.skipped}`);
+        this.importing.set(false);
+        this.selectGameWeek(gw);
+      },
+      error: (err) => {
+        this.importResult.set(err.error?.error || 'Import failed');
+        this.importing.set(false);
+      }
     });
   }
 
