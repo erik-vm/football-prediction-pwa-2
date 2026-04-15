@@ -71,17 +71,33 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
+try
 {
+    using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate();
+    var retries = 5;
+    while (retries > 0)
+    {
+        try
+        {
+            db.Database.Migrate();
+            break;
+        }
+        catch (Exception ex) when (retries > 1)
+        {
+            retries--;
+            app.Logger.LogWarning(ex, "DB migration failed, retrying in 5s... ({Retries} left)", retries);
+            Thread.Sleep(5000);
+        }
+    }
+}
+catch (Exception ex)
+{
+    app.Logger.LogError(ex, "DB migration failed after all retries, starting without migration");
 }
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
