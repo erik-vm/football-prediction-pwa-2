@@ -28,6 +28,17 @@ export interface MatchDto {
   isFinished: boolean;
 }
 
+export interface MatchWithPredictionDto extends MatchDto {
+  myPrediction: UserPredictionDto | null;
+}
+
+export interface UserPredictionDto {
+  id: string;
+  homeScore: number;
+  awayScore: number;
+  pointsEarned: number | null;
+}
+
 export interface CreateMatchRequest {
   gameWeekId: string;
   homeTeam: string;

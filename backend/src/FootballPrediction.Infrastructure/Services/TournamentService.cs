@@ -44,6 +44,12 @@ public class TournamentService : ITournamentService
         return tournaments.Select(ToDto).ToList();
     }
 
+    public async Task<TournamentDto?> GetActiveAsync()
+    {
+        var tournament = await _tournamentRepository.GetActiveAsync();
+        return tournament != null ? ToDto(tournament) : null;
+    }
+
     public async Task<TournamentDto> GetByIdAsync(Guid id)
     {
         var tournament = await _tournamentRepository.GetByIdAsync(id)

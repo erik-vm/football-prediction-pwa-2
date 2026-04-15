@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { TournamentDto, GameWeekDto, MatchDto, CreateMatchRequest, EnterResultRequest, ImportMatchesRequest, ImportMatchesResponse } from '../../shared/models/tournament.model';
+import { TournamentDto, GameWeekDto, MatchDto, MatchWithPredictionDto, CreateMatchRequest, EnterResultRequest, ImportMatchesRequest, ImportMatchesResponse } from '../../shared/models/tournament.model';
 import { PredictionDto, CreatePredictionRequest, UpdatePredictionRequest, MatchPredictionDto } from '../../shared/models/prediction.model';
 import { LeaderboardEntryDto, WeeklyLeaderboardEntryDto, UserStatsDto } from '../../shared/models/leaderboard.model';
 
@@ -38,6 +38,15 @@ export class ApiService {
 
   importMatches(gameWeekId: string, data: ImportMatchesRequest): Observable<ImportMatchesResponse> {
     return this.http.post<ImportMatchesResponse>(`${this.api}/admin/gameweeks/${gameWeekId}/import-matches`, data);
+  }
+
+  getActiveTournament(): Observable<TournamentDto> {
+    return this.http.get<TournamentDto>(`${this.api}/tournaments/active`);
+  }
+
+  getMatchesByTournament(tournamentId: string, stage?: string): Observable<MatchWithPredictionDto[]> {
+    const params = stage ? `?stage=${stage}` : '';
+    return this.http.get<MatchWithPredictionDto[]>(`${this.api}/matches/tournament/${tournamentId}${params}`);
   }
 
   getUpcomingMatches(): Observable<MatchDto[]> {

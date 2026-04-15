@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using FootballPrediction.Application.DTOs;
 using FootballPrediction.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -33,5 +34,13 @@ public class MatchController : ControllerBase
     public async Task<ActionResult<List<MatchDto>>> GetByGameWeek(Guid gameWeekId)
     {
         return Ok(await _matchService.GetByGameWeekIdAsync(gameWeekId));
+    }
+
+    [HttpGet("tournament/{tournamentId:guid}")]
+    public async Task<ActionResult<List<MatchWithPredictionDto>>> GetByTournament(
+        Guid tournamentId, [FromQuery] string? stage = null)
+    {
+        var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        return Ok(await _matchService.GetByTournamentAsync(tournamentId, userId, stage));
     }
 }

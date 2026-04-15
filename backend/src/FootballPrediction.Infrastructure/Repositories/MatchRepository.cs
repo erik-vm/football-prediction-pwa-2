@@ -35,6 +35,18 @@ public class MatchRepository : IMatchRepository
             .OrderBy(m => m.KickoffTime)
             .ToListAsync();
 
+    public async Task<List<Match>> GetByTournamentIdAsync(Guid tournamentId, string? stage = null)
+    {
+        var query = _context.Matches
+            .Include(m => m.GameWeek)
+            .Where(m => m.GameWeek!.TournamentId == tournamentId);
+
+        if (!string.IsNullOrEmpty(stage) && Enum.TryParse<Domain.Enums.TournamentStage>(stage, true, out var stageEnum))
+            query = query.Where(m => m.Stage == stageEnum);
+
+        return await query.OrderBy(m => m.KickoffTime).ToListAsync();
+    }
+
     public async Task AddAsync(Match match) =>
         await _context.Matches.AddAsync(match);
 

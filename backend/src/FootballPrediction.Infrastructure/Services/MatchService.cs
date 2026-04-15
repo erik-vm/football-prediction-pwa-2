@@ -7,11 +7,13 @@ namespace FootballPrediction.Infrastructure.Services;
 public class MatchService : IMatchService
 {
     private readonly IMatchRepository _matchRepository;
+    private readonly IPredictionRepository _predictionRepository;
     private readonly IScoringService _scoringService;
 
-    public MatchService(IMatchRepository matchRepository, IScoringService scoringService)
+    public MatchService(IMatchRepository matchRepository, IPredictionRepository predictionRepository, IScoringService scoringService)
     {
         _matchRepository = matchRepository;
+        _predictionRepository = predictionRepository;
         _scoringService = scoringService;
     }
 
@@ -50,6 +52,27 @@ public class MatchService : IMatchService
         var match = await _matchRepository.GetByIdAsync(id)
             ?? throw new KeyNotFoundException("Match not found.");
         return ToDto(match);
+    }
+
+    public async Task<List<MatchWithPredictionDto>> GetByTournamentAsync(Guid tournamentId, Guid userId, string? stage = null)
+    {
+        var matches = await _matchRepository.GetByTournamentIdAsync(tournamentId, stage);
+        var matchIds = matches.Select(m => m.Id).ToList();
+        var predictions = await _predictionRepository.GetByUserIdAsync(userId);
+        var predictionMap = predictions
+            .Where(p => matchIds.Contains(p.MatchId))
+            .ToDictionary(p => p.MatchId);
+
+        return matches.Select(m =>
+        {
+            predictionMap.TryGetValue(m.Id, out var pred);
+            var userPred = pred != null
+                ? new UserPredictionDto(pred.Id, pred.HomeScore, pred.AwayScore, pred.PointsEarned)
+                : null;
+            return new MatchWithPredictionDto(
+                m.Id, m.GameWeekId, m.HomeTeam, m.AwayTeam, m.KickoffTime,
+                m.Stage, m.StageMultiplier, m.HomeScore, m.AwayScore, m.IsFinished, userPred);
+        }).ToList();
     }
 
     public async Task<MatchDto> UpdateAsync(Guid id, UpdateMatchRequest request)

@@ -19,3 +19,22 @@ public record MatchDto(
     int? HomeScore,
     int? AwayScore,
     bool IsFinished);
+
+public record MatchWithPredictionDto(
+    Guid Id,
+    Guid GameWeekId,
+    string HomeTeam,
+    string AwayTeam,
+    DateTime KickoffTime,
+    TournamentStage Stage,
+    int StageMultiplier,
+    int? HomeScore,
+    int? AwayScore,
+    bool IsFinished,
+    UserPredictionDto? MyPrediction);
+
+public record UserPredictionDto(
+    Guid Id,
+    int HomeScore,
+    int AwayScore,
+    int? PointsEarned);
