@@ -10,7 +10,7 @@ services:
       - key: ConnectionStrings__DefaultConnection
         fromDatabase:
           name: football-prediction-db
-          property: connectionURI
+          property: connectionString
       - key: Jwt__Key
         generateValue: true
       - key: Jwt__Issuer
